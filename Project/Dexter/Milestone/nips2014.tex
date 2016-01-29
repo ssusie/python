@@ -1,0 +1,155 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips14submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{Feature Selection for Noisy Data Binary Classification }
+
+
+\author{
+Sargsyan S. \\
+Department of Applies Mathematics\\
+University of Washington\\
+Seattle, WA 98105 \\
+\texttt{hippo@cs.cranberry-lemon.edu} \\
+\And
+Coauthor Syuzanna Sargsyan\\
+%Affiliation \\%
+%Address \\%
+\texttt{email}: ssusie@uw.edu \\
+\AND
+Coauthor Bethany Lusch \\
+%Affiliation \\%
+%Address \\%
+\texttt{email} herwaldt@uw.edu  \\
+%\And%
+%Coauthor \\%
+%Affiliation \\%
+%Address \\%
+%\texttt{email} \\%
+%\And%
+%Coauthor \\%
+%Affiliation \\%
+%Address \\%
+%\texttt{email} \\%
+%(if needed)\\%
+%}%
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+\begin{document}
+
+
+\maketitle
+
+%\begin{abstract}%
+%The abstract paragraph should be indented 1/2~inch (3~picas) on both left and%
+%right-hand margins. Use 10~point type, with a vertical spacing of 11~points.%
+%The word \textbf{Abstract} must be centered, bold, and in point size 12. Two%
+%line spaces precede the abstract. The abstract must be limited to one%
+%paragraph.%
+%\end{abstract}%
+
+%\section{Section title}%
+
+
+%\begin{center}%
+%   \url{http://papers.nips.cc}%
+%\end{center}
+%Please read carefully the%
+%instructions below, and follow them faithfully.%
+
+This work is on binary classification of ``bag-of-words'' type data. The data 
+is called Dexter and downloaded from the following website.
+\begin{center}
+   \url{http://archive.ics.uci.edu/ml/datasets/Dexter}
+\end{center}
+
+It is required to classify the Reuter's articles as ``corporate acquisitions'' 
+or not. Overall there are 20,000 features out of which only 9947 are real 
+features and the rest is a noise. Also 2572 real features are always zeros.
+There are several techniques we have tried so far for this classification task.
+
+\section{Support Vector Machine}
+Support Vector machine ( \cite{Svm}) is a binary linear classifier. It constructs a hyperplane in a high dimensional space 
+to separate two classes. The hyperplane used in the algorithm has the largest 
+functional margin which provides a lower generalization error.  We used the built-in Python classifier 
+\textit{sklearn.svm.SVC}  and on the validation data we got {\bf 50\%} 
+error. This is because the SVM algorithm treats all features as equally important whereas in our data set 
+ more then half of the features are irrelevant.
+
+\section{Random Forests}
+Random forests algorithm (\cite{RandForests}) uses decision trees for making predictions. It randomly 
+chooses subsamples from dataset, constructs decision trees and uses averaging to improve prediction. The 
+Python built-in function \textit{sklearn.ensemble.RandomForestClassifier} has 
+options for selecting the number of subsamples for constructing the decision 
+trees. Without using this option on average we get {\bf 16.26\%} error on the validation set 
+by running the classifier 100 times. However, using the fact that we know the number of relevant features is 
+ give the number of features is 7375, we get  on average {\bf 11.6\%} error.
+
+\section{Lasso}
+Lasso (\cite{Lasso}) is an algorithm for linear regression which ignores some features (sets the coefficient to zero) depending
+ on the value of the regularizer. As was said this is a regression algorithm which predicts numerical values but 
+ does not do classification. However, as we did in homework 2, we used the algorithm to try to zero out
+  irrelevant features then use some threshold for  classification. Again, we used the Python built-in 
+function \textit{sklearn.linear\_model.Lasso} and used 0 as a threshold value. 
+ we tried the same here an for suitable choice of 
+$\lambda$  ($ \lambda= 0.0134217728$), we were able to get {\bf 9.33\%} 
+accuracy.\\
+
+\section{Linear Support Vector Classification combined with $L_1$ regularization}
+There is an option in the Python  built-in function \textit{sklearn.svm.LinearSVC} (\cite{skilearn})where you can 
+require to do a $L_1$ regularization. This basically combines SVM algorithm with 
+Lasso. This can be done by setting $penalty='l1'$ and by a suitable choice of 
+lambda we were able to get {\bf 7.67\%} accuracy.
+
+\section{Mean of each class}
+As we know most of the features in the dataset are useless, therefore we need to do some tricks to get rid 
+of them somehow. The idea here was to compute the mean of each feature for two classes separately 
+then compare them. If they differ by more than 0.1 the SVM error reduces from $50\%$ 
+to $15.67\%$. However there was no essential improvement in other algorithms 
+even though we have tried differnet values for separation.
+
+
+\subsubsection*{Acknowledgments}
+
+We especially thank Charles Delahunt for vary helpful discussions.
+
+\subsubsection*{References}
+
+
+
+\small{\begingroup
+\renewcommand{\section}[2]{}%
+
+\begin{thebibliography}{5}
+
+ \bibitem{Svm}   Cortes, C.; Vapnik, V. (1995). "Support-vector networks". Machine Learning 20 (3): 273. doi:10.1007/BF00994018
+ 
+ \bibitem{RandForests} Ho, Tin Kam (1995). Random Decision Forests (PDF). Proceedings of the 3rd
+  International Conference on Document Analysis and Recognition, Montreal, QC, 14–16 August 1995. pp. 278–282.
+ 
+ \bibitem{Lasso} Tibshirani, R. (1996). Regression shrinkage and selection via the 
+ lasso. Journal of the Royal Statistical Society. Series B (Methodological), 
+ JSTOR, pp. 267--288
+ 
+ \bibitem{skilearn} Documentation on LinearSVC, 
+ \url{http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html}
+ 
+\end{thebibliography}
+\endgroup
+
+\end{document}

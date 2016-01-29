@@ -1,0 +1,6 @@
+hello world in the new file
+and another line
+hello world in the new file
+and another line
+2hello world in the new file
+and another line
